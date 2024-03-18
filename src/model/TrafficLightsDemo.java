@@ -9,8 +9,8 @@ public class TrafficLightsDemo {
         assistant.start();
 
         // Create and start some students
-        for (int i = 1; i <= 5; i++) {
-            Student student = new Student("Student" + i, assistant, semaphore);
+        for (int i = 0; i < 5; i++) {
+            Student student = new Student(assistant, semaphore);
             student.start();
         }
     }
