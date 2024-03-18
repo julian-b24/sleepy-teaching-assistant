@@ -16,12 +16,20 @@ class Student extends Thread {
             try {
                 Thread.sleep(1000); // Simulate some waiting time between requests
                 semaphore.acquire(); // Signal the assistant
-                assistant.interrupt(); // Wake up the assistant if it's sleeping
+                wakeUpAssistant();
                 Thread.sleep(1000); // Simulate some work after accessing the assistant
-                semaphore.release(); // Release the assistant for others to use
+                leaveAssistantsOffice();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void wakeUpAssistant() {
+        assistant.interrupt(); // Wake up the assistant if it's sleeping
+    }
+
+    public void leaveAssistantsOffice() {
+        semaphore.release(); // Release the assistant for others to use
     }
 }
