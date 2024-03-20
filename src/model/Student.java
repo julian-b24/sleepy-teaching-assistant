@@ -15,22 +15,23 @@ public class Student extends Thread {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(1000); // Simulate some waiting time between requests
-                semaphore.acquire(); // Signal the assistant
-                if (assistant.isSleeping()) {
-                    System.out.println(getName() + " is waking up the assistant.");
-                    wakeUpAssistant();
-                    assistant.addToWaitlist(this);
-                } else if (assistant.getWaitlist().size()< 3) {
-                    assistant.addToWaitlist(this);
-                    System.out.println(getName() + " is waiting in line.");
-                    semaphore.release(); // Release the assistant for others to use
-                    waitForAssistance();
-                } else {
-                    System.out.println(getName() + " is coding.");
-                    semaphore.release(); // Release the assistant for others to use
-                    Thread.sleep((long) (Math.random() * 5000)); // Simulate coding time
+                Thread.sleep((long) ((Math.random()+1 )* 5000)); // Simulate some waiting time between requests
+                if (!assistant.getWaitlist().contains(this)){
+                    System.out.println(getName() + " needs help from the assistant.");
+
+                    synchronized (assistant) {
+                        if (assistant.getWaitlistSize() < 3) {
+                            assistant.addToWaitlist(this);
+                            //System.out.println(assistant.getWaitlistSize());
+                            assistant.notify(); // Notificar al asistente que hay un estudiante esperando
+                            System.out.println(getName() + " is waiting in line.");
+                        } else {
+                            System.out.println(getName() + " is coding.");
+                            Thread.sleep((long) (Math.random() * 5000)); // Simulate coding time
+                        }
+                    }
                 }
+                //waitForAssistance(); // Esperar la asistencia después de notificar al asistente
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -38,14 +39,14 @@ public class Student extends Thread {
     }
 
     public void wakeUpAssistant() {
-        assistant.interrupt(); // Wake up the assistant if it's sleeping
+        //assistant.interrupt(); // Wake up the assistant if it's sleeping
     }
 
     public void leaveAssistantsOffice() {
         semaphore.release(); // Release the assistant for others to use
     }
 
-    public void waitForAssistance() {
+    public synchronized void waitForAssistance() {
         try {
             wait();
         } catch (InterruptedException e) {

@@ -4,7 +4,7 @@ import java.util.concurrent.Semaphore;
 
 public class TrafficLightsDemo {
     public static void main(String[] args) {
-        Semaphore semaphore = new Semaphore(1); // Only one student can access the assistant at a time
+        Semaphore semaphore = new Semaphore(1, true); // Only one student can access the assistant at a time
         Assistant assistant = new Assistant(semaphore);
         assistant.start();
 
